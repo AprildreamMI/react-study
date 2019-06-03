@@ -219,6 +219,8 @@ export class App2 extends Component {
 }
 ```
 
+![1559446716502](assets/1559446716502.png)
+
 ### 生命周期
 
 
@@ -393,4 +395,153 @@ class Son extends React.Component {
 
 export default Son
 ```
+
+### 混合 包装
+
+#### 包装组件
+
+```react
+import React from 'react'
+
+class Son extends React.Component {
+  constructor () {
+    super()
+    this.state = {
+      num: 1
+    }
+  }
+  componentDidMount () {
+    console.log('son 组件原有的功能')
+  }
+  render () {
+    return (
+      <React.Fragment>
+        Son 子组件
+        <hr />
+        { this.state.num }
+      </React.Fragment>
+    )
+  }
+}
+
+export default class Wrap extends React.Component {
+  constructor () {
+    super()
+    this.state = {
+
+    }
+  }
+  componentDidMount () {
+    console.log('包装组件中的功能')
+  }
+  render () {
+    return <Son />
+  }
+}
+
+```
+
+#### 使用包装组件
+
+```react
+import React from 'react';
+import './App.css';
+import Wrap from './son'
+
+function App() {
+  return (
+    <div className="App">
+      <Wrap />>
+    </div>
+  );
+}
+
+export default App;
+
+```
+
+### 路由
+
+#### 使用
+
+##### 安装
+
++ npm
+
+  ```
+  // 在浏览器中使用
+  npm i react-router-dom
+  ```
+
++ yarn
+
+  ```
+  yarn add react-router-dom
+  ```
+
+##### 基本使用
+
+```react
+import React from 'react';
+import './App.css';
+// 专门用来给浏览器使用的
+import {HashRouter, BrowserRouter as Router, Route,
+NavLink, Switch, Redirect} from 'react-router-dom'
+
+class Home extends React.Component {
+  render () {
+    return (
+      <div>
+        <h1>
+          我是首页
+        </h1>
+      </div>
+    )
+  }
+}
+
+
+class App extends React.Component {
+  render () {
+    return (
+      <div className="App">
+        <h1> 头部 </h1>
+
+        {/* Router 相当于规则和坑  */}
+        <Router>
+          {/* 因为Router 只能又一个子节点 */}
+          <React.Fragment>
+            {/* 模糊匹配 只要以/开头的路由都会匹配到 
+                如果不加 exact(精确匹配) 路由为 “/a时”会出现两个 “首页” 
+            */}
+            <Route path="/" component={ Home } />
+            <Route path="/a" component={ Home } />
+          </React.Fragment>
+        </Router>
+
+        <h1> 底部 </h1>
+      </div>
+    )
+  }
+}
+
+export default App;
+
+```
+
++ exact
+
+  > 精确匹配（必须精确匹配到path的字符串）
+  >
+  > 纵向深入匹配
+  >
+  > 有嵌套路由的 不能使用exact 进行精确匹配
+
++ switch
+
+  > 横向匹配 选择一个
+  >
+  > 被包裹的<Route />
+  >
+  > 从上到下进行匹配
 
