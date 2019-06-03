@@ -31,7 +31,9 @@ class Man extends React.Component {
   render () {
     return (
       <div>
-        <h3>男人</h3>
+        <h3>
+          男人
+        </h3>
       </div>
     )
   }
