@@ -641,3 +641,36 @@ export default App;
   >
   > 从上到下进行匹配
 
+# Redux
+
+
+
+![1559744055472](assets/1559744055472.png)
+
+## 安装
+
+```react
+npm i redux react-redux -S
+```
+
+## 使用
+
+1. 新建actions目录
+
+   > 存放发出的actions 指令
+
+2. reducers
+
+   > 收到actions 指令 对数据进行处理 产生新的state数据
+
+3. store
+
+   > 存放数据和状态
+
+4. constants
+
+   > 因为actions 需要写一个名字
+   >
+   > reducers 需要匹配一个名字
+   >
+   > 这两个名字会在两个对方用到，重复出现的单独抽出来
