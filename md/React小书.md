@@ -131,3 +131,233 @@ render () {
 }
 ```
 
+## 事件监听
+
+> 在 React.js 不需要手动调用浏览器原生的 `addEventListener` 进行事件监听。React.js 帮我们封装好了一系列的 `on*` 的属性
+
+> *这些 on\* 的事件监听只能用在普通的 HTML 的标签上，而不能用在组件标签上*。也就是说，`<Header onClick={…} />` 这样的写法不会有什么效果的。这一点要注意，但是有办法可以做到这样的绑定，以后我们会提及。现在只要记住一点就可以了：这些 `on*` 的事件监听只能用在普通的 HTML 的标签上，而不能用在组件标签上。
+
+### event 对象
+
+> 事件监听函数会被自动传入一个 `event` 对象
+
+### 关于事件中的this
+
+> 一般在某个类的实例方法里面的 `this` 指的是这个实例本身。但是你在上面的 `handleClickOnTitle` 中把 `this` 打印出来，你会看到 `this` 是 `null` 或者 `undefined`
+
+```
+...
+  handleClickOnTitle (e) {
+    console.log(this) // => null or undefined
+  }
+...
+```
+
+这是因为 React.js 调用你所传给它的方法的时候，并不是通过对象方法的方式调用（`this.handleClickOnTitle`），而是直接通过函数调用 （`handleClickOnTitle`），所以事件监听函数内并不能通过 `this` 获取到实例。
+
+如果你想在事件函数当中使用当前的实例，你需要手动地将实例方法 `bind` 到当前实例上再传入给 React.js。
+
+```javascript
+class Title extends Component {
+  handleClickOnTitle (e) {
+    console.log(this)
+  }
+
+  render () {
+    return (
+      // 如果需要传递参数的话
+      <h1 onClick={this.handleClickOnTitle.bind(this, 'Hello')}>React 小书</h1>
+    )
+  }
+}
+```
+
+## 组件的 state和setState 
+
+### setState 接受函数参数
+
+> 你调用 `setState` 的时候，*React.js 并不会马上修改 state*。而是把这个对象放到一个更新队列里面，稍后才会从队列当中把新的状态提取出来合并到 `state` 当中，然后再触发组件更新。
+
+```
+...
+  handleClickOnLikeButton () {
+    console.log(this.state.isLiked)   false
+    this.setState({
+      isLiked: !this.state.isLiked
+    })
+    console.log(this.state.isLiked)   false
+  }
+...
+```
+
+> 两次打印都是false ，即使我们中间已经setState过一次了
+>
+> 如果你想在setState之后使用新的state来做后续运算就做不到
+
+```
+...
+  handleClickOnLikeButton () {
+    this.setState({ count: 0 }) // => this.state.count 还是 undefined
+    this.setState({ count: this.state.count + 1}) // => undefined + 1 = NaN
+    this.setState({ count: this.state.count + 2}) // => NaN + 2 = NaN
+  }
+...
+```
+
+最终的结果是NaN ,setState 不能立即进行修改
+
+#### setState的第二种使用方式
+
+> 可以接受一个函数作为参数， React会把上一个setState的结果传入这个函数，可以使用此结果进行运算、操作、然后返回一个对象作为更新state的对象
+
+```
+...
+  handleClickOnLikeButton () {
+    this.setState((prevState) => {
+      return { count: 0 }
+    })
+    this.setState((prevState) => {
+      return { count: prevState.count + 1 } // 上一个 setState 的返回是 count 为 0，当前返回 1
+    })
+    this.setState((prevState) => {
+      return { count: prevState.count + 2 } // 上一个 setState 的返回是 count 为 1，当前返回 3
+    })
+    // 最后的结果是 this.state.count 为 3
+  }
+...
+```
+
+##### setState 合并
+
+> 多次进行setState不会带来性能问题
+
+进行了三次setState， 但是实际上组件只会重新渲染一次，而不是三次
+
+**因为在React.js内部会把JavaScript事件循环中的消息队列同一个消息中的setState都进行合并以后再重新渲染组件**
+
+## 配置组件的props
+
+### 向组件内部传入函数作为参数
+
+```
+class Index extends Component {
+  render () {
+    return (
+      <div>
+        <LikeButton
+          wordings={{likedText: '已赞', unlikedText: '赞'}}
+          onClick={() => console.log('Click on like button!')}/>
+      </div>
+    )
+  }
+}
+```
+
+> 可以通过this.props.onClick方法获取到这个传进来的函数
+
+修改一下组件onClick时触发的函数为
+
+```
+...
+  handleClickOnLikeButton () {
+    this.setState({
+      isLiked: !this.state.isLiked
+    })
+    // 在每次点击组件时触发handleClickOnLikeButton 判断是否传入onClick方法
+    // 如果传入了 则进行调用
+    if (this.props.onClick) {
+      this.props.onClick()
+    }
+  }
+...
+```
+
+### 默认配置 defaultProps
+
+```javascript
+class LikeButton extends Component {
+  // 加上了如下代码 
+  static defaultProps = {
+    likedText: '取消',
+    unlikedText: '点赞'
+  }
+
+  constructor () {
+    super()
+    this.state = { isLiked: false }
+  }
+
+  handleClickOnLikeButton () {
+    this.setState({
+      isLiked: !this.state.isLiked
+    })
+  }
+
+  render () {
+    return (
+      <button onClick={this.handleClickOnLikeButton.bind(this)}>
+        {this.state.isLiked
+          ? this.props.likedText
+          : this.props.unlikedText} 👍
+      </button>
+    )
+  }
+}
+```
+
+### props 不可变
+
+> props 一旦传进来就不能改变
+
+> 你不能改变一个组件被渲染的时候传进来的 `props`。React.js 希望一个组件在输入确定的 `props` 的时候，能够输出确定的 UI 显示形态。如果 `props`渲染过程中可以被修改，那么就会导致这个组件显示形态和行为变得不可预测，这样会可能会给组件使用者带来困惑。
+
+**但这并不意味着由props决定的显示形态不能被修改 组件的使用者可以主动的通过重新渲染的方式 把新的props传入组件当中**
+
+> 通过父组件主动重新渲染的方式来传入新的props，从而达到更新的效果
+
+```react
+class Index extends Component {
+  constructor () {
+    super()
+    this.state = {
+      likedText: '已赞',
+      unlikedText: '赞'
+    }
+  }
+
+  handleClickOnChange () {
+    this.setState({
+      likedText: '取消',
+      unlikedText: '点赞'
+    })
+  }
+
+  render () {
+    return (
+      <div>
+      // 把state中的属性传入子组件
+        <LikeButton
+          likedText={this.state.likedText}
+          unlikedText={this.state.unlikedText} />
+        <div>
+          // 当点击父组件的button时 修改state中的属性 从而修改了子组件中传入的
+          // props
+          <button onClick={this.handleClickOnChange.bind(this)}>
+            修改 wordings
+          </button>
+        </div>
+      </div>
+    )
+  }
+}
+```
+
+## state 和 props 的总结
+
+### state
+
++ state 的主要作用是用于组件保存、控制、修改**自己**的可变状态
++ 可以认为state是一个局部的，只能被组件自身控制的
+
+### props
+
