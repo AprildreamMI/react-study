@@ -305,6 +305,52 @@ class LikeButton extends Component {
 }
 ```
 
+### propTypes 和 组件参数验证
+
+#### 安装
+
+```
+npm install --save prop-types
+```
+
+#### 使用
+
+```
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
+class Comment extends Component {
+  static propTypes = {
+    comment: PropTypes.object
+  }
+
+  render () {
+    const { comment } = this.props
+    return (
+      <div className='comment'>
+        <div className='comment-user'>
+          <span>{comment.username} </span>：
+        </div>
+        <p>{comment.content}</p>
+      </div>
+    )
+  }
+}
+```
+
+```
+PropTypes.array
+PropTypes.bool
+PropTypes.func
+PropTypes.number
+PropTypes.object
+PropTypes.string
+PropTypes.node
+PropTypes.element
+```
+
+
+
 ### props 不可变
 
 > props 一旦传进来就不能改变
@@ -352,12 +398,117 @@ class Index extends Component {
 }
 ```
 
+## 给父组件传递数据
+
+![1560051038144](assets/1560051038144.png)
+
 ## state 和 props 的总结
 
 ### state
 
+> 设置了state的叫做有状态组件
+
 + state 的主要作用是用于组件保存、控制、修改**自己**的可变状态
 + 可以认为state是一个局部的，只能被组件自身控制的
++ state中状态可以通过this.setState方法进行更新，setState会导致组件的重新渲染
 
 ### props
+
+> 没有state的组件叫做无状态组件
+
++ props的蛀牙偶哦用时让使用该组件的父组件可以传入参数来配置该组件，他是外部传进来的配置参数
++ 租金啊内部无法控制也无法修改，除非外部组件竹筒传入新的props，否则组件的props永远保持不变
+
+## 列表渲染数据
+
+### 渲染存放JSX元素的数组
+
+## 挂载阶段的组件生命周期（一）
+
+> React.js 组件渲染，并且构建DOM元素然后塞入页面的过程称为组件的挂载
+
+React.js 将组件渲染，并且构造 DOM 元素然后塞入页面的过程称为组件的挂载。这一节我们学习了 React.js 控制组件在页面上挂载和删除过程里面几个方法：
+
+- `componentWillMount`：组件挂载开始之前，也就是在组件调用 `render` 方法之前调用。
+- `componentDidMount`：组件挂载完成以后，也就是 DOM 元素已经插入页面后调用。
+- `componentWillUnmount`：组件对应的 DOM 元素从页面中删除之前调用。
+
+```
+-> constructor()
+-> componentWillMount()
+-> render()
+// 然后构造 DOM 元素插入页面
+-> componentDidMount()
+```
+
+## 更新阶段的组件生命周期
+
+1. `shouldComponentUpdate(nextProps, nextState)`：你可以通过这个方法控制组件是否重新渲染。如果返回 `false` 组件就不会重新渲染。这个生命周期在 React.js 性能优化上非常有用。
+2. `componentWillReceiveProps(nextProps)`：组件从父组件接收到新的 `props` 之前调用。
+3. `componentWillUpdate()`：组件开始重新渲染之前调用。
+4. `componentDidUpdate()`：组件重新渲染并且把更改变更到真实的 DOM 以后调用。
+
+## ref 和 React.js 中的DOM操作
+
+```
+class AutoFocusInput extends Component {
+  componentDidMount () {
+    this.input.focus()
+  }
+
+  render () {
+    return (
+    // 元素在页面挂载完以后，就会调用此函数 传递DOM实列给Input 然后自动获取focus()
+      <input ref={(input) => this.input = input} />
+    )
+  }
+}
+
+ReactDOM.render(
+  <AutoFocusInput />,
+  document.getElementById('root')
+)
+```
+
+## dangerouslySetHTML 和 style 属性
+
+### dangerouslySetHTML （动态的插入HTML元素）
+
+表达式插入并不会把一个 `<h1>` 渲染到页面，而是把它的文本形式渲染了。那要怎么才能做到设置动态 HTML 结构的效果呢？React.js 提供了一个属性 `dangerouslySetInnerHTML`，可以让我们设置动态设置元素的 innerHTML：
+
+```javascript
+...
+  render () {
+    return (
+      <div
+        className='editor-wrapper'
+        dangerouslySetInnerHTML={{__html: this.state.content}} />
+    )
+  }
+...
+```
+
+### style
+
+React.js 中的元素的 `style` 属性的用法和 DOM 里面的 `style` 不大一样，普通的 HTML 中的：
+
+```html
+<h1 style='font-size: 12px; color: red;'>React.js 小书</h1>
+```
+
+在 React.js 中你需要把 CSS 属性变成一个对象再传给元素：
+
+```html
+<h1 style={{fontSize: '12px', color: 'red'}}>React.js 小书</h1>
+```
+
+`style` 接受一个对象，这个对象里面是这个元素的 CSS 属性键值对，原来 CSS 属性中带 `-` 的元素都必须要去掉 `-` 换成驼峰命名，如 `font-size` 换成 `fontSize`，`text-align` 换成 `textAlign`。
+
+用对象作为 `style` 方便我们动态设置元素的样式。我们可以用 `props` 或者 `state` 中的数据生成样式对象再传给元素，然后用 `setState` 就可以修改样式，非常灵活：
+
+```html
+<h1 style={{fontSize: '12px', color: this.state.color}}>React.js 小书</h1>
+```
+
+只要简单地 `setState({color: 'blue'})` 就可以修改元素的颜色成蓝色。
 

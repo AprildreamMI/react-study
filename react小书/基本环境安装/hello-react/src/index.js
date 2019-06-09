@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import List from './list'
 // import App from './App';
 import * as serviceWorker from './serviceWorker';
 
@@ -55,7 +56,7 @@ class Header extends React.Component {
 
 // 把React 组件渲染到页面
 ReactDOM.render(
-  <Header />, 
+  <List />, 
   document.getElementById('root')
 );
 // ReactDOM.render(<App />, document.getElementById('root'));
