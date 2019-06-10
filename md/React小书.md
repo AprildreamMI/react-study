@@ -570,3 +570,19 @@ React.js 中的元素的 `style` 属性的用法和 DOM 里面的 `style` 不大
 
 > 高阶组件就是一个函数，传给他一个组件，它返回一个新的组件
 
+> 高阶组件是一个函数（而不是组件），它接受一个组件作为参数，返回一个新的组件。这个新的组件会使用你传给它的组件作为子组件
+
+```react
+import React, { Component } from 'react'
+
+export default (WrappedComponent) => {
+  class NewComponent extends Component {
+    // 可以做很多自定义逻辑
+    render () {
+      return <WrappedComponent />
+    }
+  }
+  return NewComponent
+}
+```
+
