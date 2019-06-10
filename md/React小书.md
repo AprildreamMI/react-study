@@ -315,7 +315,7 @@ npm install --save prop-types
 
 #### 使用
 
-```
+```react
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
@@ -349,7 +349,39 @@ PropTypes.node
 PropTypes.element
 ```
 
+### 函数式组件验证
 
+```react
+import React from 'react'
+import PropTypes from 'prop-types'
+import Comment from './Comment'
+
+function CommentList ({ comments = [], onDeleteComment }) {
+  return (
+    <div>
+      {
+        comments.map((item, index) => {
+          return <Comment comment = { item } key = {index} />
+        } )
+      }
+    </div>
+  )
+}
+
+CommentList.propTypes  = {
+  comments: PropTypes.array.isRequired,
+  onDeleteComment: PropTypes.func.isRequired
+}
+
+export default CommentList
+```
+
+```react
+const Text = ({ children }) => 
+  <p>{children}</p>
+Text.propTypes = { children: React.PropTypes.string };
+Text.defaultProps = { children: 'Hello World!' };
+```
 
 ### props 不可变
 
@@ -511,4 +543,30 @@ React.js 中的元素的 `style` 属性的用法和 DOM 里面的 `style` 不大
 ```
 
 只要简单地 `setState({color: 'blue'})` 就可以修改元素的颜色成蓝色。
+
+## 组件的命名方法和摆放顺序
+
++ 组件的私有方法都用`—`开头
+
++ 事件监听的方法都用`handle`方法开头
+
++ 把事件监听方法传给组件的时候，属性名用`on`开头
+
+  > <CommentInput
+  > onSubmit={this.handleSubmitComment.bind(this)} />
+
+### 组件的内容编写顺序
+
+1. static 开头的类属性，如 `defaultProps`、`propTypes`。
+2. 构造函数，`constructor`。
+3. getter/setter（还不了解的同学可以暂时忽略）。
+4. 组件生命周期。
+5. `_` 开头的私有方法。
+6. 事件监听方法，`handle*`。
+7. `render*`开头的方法，有时候 `render()` 方法里面的内容会分开到不同函数里面进行，这些函数都以 `render*` 开头。
+8. `render()` 方法。
+
+## 高阶组件
+
+> 高阶组件就是一个函数，传给他一个组件，它返回一个新的组件
 
