@@ -586,3 +586,305 @@ export default (WrappedComponent) => {
 }
 ```
 
+## React 的 context
+
+![React.js å°ä¹¦ context å¾ç](http://huzidaha.github.io/static/assets/img/posts/3BC6BDFC-5772-4045-943B-15FBEC28DAC0.png)
+
+`Index` 把 `state.themeColor` 放到某个地方，这个地方是每个 `Index` 的子组件都可以访问到的。当某个子组件需要的时候就直接去那个地方拿就好了，而不需要一层层地通过 `props` 来获取。不管组件树的层次有多深，任何一个组件都可以直接到这个公共的地方提取 `themeColor` 状态
+
+> React.js 的 context 就是这么一个东西，某个组件只要往自己的 context 里面放了某些状态，这个组件之下的所有子组件都直接访问这个状态而不需要通过中间组件的传递。
+
++ 一个组件的 context 只有它的子组件能够访问，它的父组件是不能访问到的，你可以理解每个组件的 context 就是瀑布的源头，只能往下流不能往上飞。
+
+```react
+class Index extends Component {
+  // 验证 getChildContext 返回的对象。
+  // 【必写】
+  static childContextTypes = {
+    themeColor: PropTypes.string
+  }
+
+  constructor () {
+    super()
+    this.state = { themeColor: 'red' }
+  }
+
+	// 【必写】
+  getChildContext () {
+    return { themeColor: this.state.themeColor }
+  }
+
+  render () {
+    return (
+      <div>
+        <Header />
+        <Main />
+      </div>
+    )
+  }
+}
+
+class Header extends Component {
+  render () {
+    return (
+    <div>
+      <h2>This is header</h2>
+      <Title />
+    </div>
+    )
+  }
+}
+
+class Main extends Component {
+  render () {
+    return (
+    <div>
+      <h2>This is main</h2>
+      <Content />
+    </div>
+    )
+  }
+}
+
+class Title extends Component {
+  // 【使用】
+  // 【必写】
+  static contextTypes = {
+    themeColor: PropTypes.string
+  }
+  render () {
+    return (
+      // 获取到context
+      <h1 style={{ color: this.context.themeColor }}>
+        React.js 小书标题
+      </h1>
+    )
+  }
+}
+
+class Content extends Component {
+  render () {
+    return (
+    <div>
+      <h2>React.js 小书内容</h2>
+    </div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <Index />,
+  document.getElementById('root')
+)
+```
+
+
+
+## 动手实现Redux
+
+### **一 优雅地修改共享状态**
+
++ Redux
+
+  > Redux 是一种架构模式 ，他不关注你到底使用什么库，你可以把他应用到React和Vue
+
++ React-redux
+
+  > 把Redux 这种架构模式和React.js结合起来的一个库，就是Redux
+
+```react
+// 设置一些状态
+const appState = {
+  title: {
+    text: 'React.js 小书',
+    color: 'red',
+  },
+  content: {
+    text: 'React.js 小书内容',
+    color: 'blue'
+  }
+}
+
+// 渲染函数
+function renderApp (appState) {
+  renderTitle(appState.title)
+  renderContent(appState.content)
+}
+
+function renderTitle (title) {
+  const titleDOM = document.getElementById('title')
+  titleDOM.innerHTML = title.text
+  titleDOM.style.color = title.color
+}
+
+function renderContent (content) {
+  const contentDOM = document.getElementById('content')
+  contentDOM.innerHTML = content.text
+  contentDOM.style.color = content.color
+}
+
+// 必须通过此函数进行状态的修改
+function dispatch (action) {
+  switch (action.type) {
+    case 'UPDATE_TITLE_TEXT':
+      appState.title.text = action.text
+      break
+    case 'UPDATE_TITLE_COLOR':
+      appState.title.color = action.color
+      break
+    default:
+      break
+  }
+}
+
+// 首次进行渲染
+renderApp(appState)
+
+dispatch({ type: 'UPDATE_TITLE_TEXT', text: '《React.js 小书》' }) // 修改标题文本
+dispatch({ type: 'UPDATE_TITLE_COLOR', color: 'blue' }) // 修改标题颜色
+
+renderApp(appState)
+```
+
+### 抽离store和监控数据变化
+
+#### 抽离store
+
+```react
+
+// 设置一些状态
+const appState = {
+  title: {
+    text: 'React.js 小书',
+    color: 'red',
+  },
+  content: {
+    text: 'React.js 小书内容',
+    color: 'blue'
+  }
+}
+
+// 渲染函数
+function renderApp (appState) {
+  renderTitle(appState.title)
+  renderContent(appState.content)
+}
+
+function renderTitle (title) {
+  const titleDOM = document.getElementById('title')
+  titleDOM.innerHTML = title.text
+  titleDOM.style.color = title.color
+}
+
+function renderContent (content) {
+  const contentDOM = document.getElementById('content')
+  contentDOM.innerHTML = content.text
+  contentDOM.style.color = content.color
+}
+
+// 必须通过此函数进行状态的修改
+function stateChanger (state, action) {
+  switch (action.type) {
+    case 'UPDATE_TITLE_TEXT':
+      state.title.text = action.text
+      break
+    case 'UPDATE_TITLE_COLOR':
+      state.title.color = action.color
+      break
+    default:
+      break
+  }
+}
+
+// 返回 state 和 dispatch 合集
+function createStore (state, stateChanger) {
+  // 新建一个函数集合
+  const listeners = []
+  // 调用此函数 传入一个函数
+  const subscribe = (listener) => {
+    console.log(listener)
+    listeners.push(listener)
+  }
+  const getState = () => state
+  const dispatch = (action) => {
+    stateChanger(state, action)
+    // 循环调用函数数组中的函数
+    listeners.forEach((listener) => listener())
+  }
+  return { getState, dispatch, subscribe }
+}
+
+// 创建一个state 和 dispath 集合
+const store = createStore(appState, stateChanger)
+// 传入一个函数去调用渲染函数
+store.subscribe(() => renderApp(store.getState()))
+
+// 首次进行渲染
+renderApp(store.getState())
+
+// 接下来不需要再进行渲染
+store.dispatch({ type: 'UPDATE_TITLE_TEXT', text: '《React.js 小书》' }) // 修改标题文本
+store.dispatch({ type: 'UPDATE_TITLE_COLOR', color: 'blue' }) // 修改标题颜色
+
+```
+
+### 纯函数
+
+> *一个函数的返回结果只依赖于它的参数，并且在执行过程里面没有副作用，我们就把这个函数叫做纯函数*。
+>
+> + 函数的返回结果只依赖于它的参数
+> + 函数执行过程里面没有副作用
+
+#### 函数的返回结果只依赖于它的参数
+
+```react
+const a = 1
+const foo = (b) => a + b
+foo(2) // => 3
+```
+
+foo 就不是一个纯函数，因为它返回的结果依赖于外部变量a，我们在不知道a的值的情况下，并不能保证foo(2)的返回值是3
+
+```react
+const a = 1
+const foo = (x, b) => x + b
+foo(1, 2) // => 3
+```
+
+foo 现在的返回结果只依赖于它的参数x和b，他是纯函数
+
+#### 函数执行过程中没有副作用
+
+>  一个函数执行过程产生了外部可观察的变化，那么就是说这个函数是有副作用的
+
+```react
+const a = 1
+const foo = (obj, b) => {
+  return obj.x + b
+}
+const counter = { x: 1 }
+foo(counter, 2) // => 3
+counter.x // => 1
+```
+
+计算前后counter不会发生任何变化，它就是纯的
+
+```react
+const a = 1
+const foo = (obj, b) => {
+  obj.x = 2
+  return obj.x + b
+}
+const counter = { x: 1 }
+foo(counter, 2) // => 4
+counter.x // => 2
+```
+
+计算前后的counter产生了变化，所以它产生了副作用，他不是纯的
+
+> 除了修改外部的变量，一个函数在执行过程中还有很多方式产生*外部可观察的变化*，比如说调用 DOM API 修改页面，或者你发送了 Ajax 请求，还有调用 `window.reload` 刷新浏览器，甚至是 `console.log` 往控制台打印数据也是副作用。
+
+## 动手实现React-redux
+
+### 一 初始化工程
+

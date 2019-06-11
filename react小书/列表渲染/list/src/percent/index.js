@@ -4,6 +4,7 @@ class Input extends React.Component {
   render () {
     return (
       <React.Fragment>
+        <a href="./index2.html">index2html</a>
         <input type="number" onChange={ e=> {
           this.props.inputNumber(e.target.value)
         } } />
