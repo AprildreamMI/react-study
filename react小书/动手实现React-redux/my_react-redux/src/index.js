@@ -4,7 +4,7 @@ import './index.css';
 // import App from './App';
 import Index from './react-redux/index';
 // import ChangeButton from './content/index';
-import ThemeColor from './content/thmemColor';
+// import ThemeColor from './content/thmemColor';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(<Index />, document.getElementById('root'));

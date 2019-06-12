@@ -14,17 +14,18 @@ class Header extends React.Component {
   }
 
   componentWillMount () {
-    this._updateTemeColor()
+    this._updateThemeColor()
+    const { store } = this.context
+    store.subscribe( () => this._updateThemeColor() )
   }
 
-  _updateTemeColor () {
+  _updateThemeColor () {
     console.log(this.context)
     const { store } = this.context
     const state = store.getState()
     this.setState({
       themeColor: state.themeColor
     })
-    console.log()
   }
 
   render () {
