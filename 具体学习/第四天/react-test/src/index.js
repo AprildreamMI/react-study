@@ -8,7 +8,8 @@ import * as serviceWorker from './serviceWorker';
 
 const store = Store({
   user: {
-    isLoading: false
+    isLoading: false,
+    loading: false
   },
   city: {
     '024': '西安'

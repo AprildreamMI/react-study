@@ -888,3 +888,95 @@ counter.x // => 2
 
 ### 一 初始化工程
 
+## Smart 组件 vs Dumb 组件
+
++ Dumb
+
+  只会接受props 并且渲染确定结果的组件我们把它叫做Dumb 组件，这种组件只关心一件事就是根据props进行渲染
+
+  + 不依赖React。js 和 Dumb 组件以外的内容，不依赖Redux 不 依赖React-redux
+
++ Smart
+
+  > 专门进行数据相关的应用处理，和Ajax 打交道，然后把数据通过props传递给Dumb 
+
+### 划分Smart 和 Dumb 组件
+
+列如一个组件Header.js
+
+此组件依赖了react-redux
+
+```react
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+
+class Header extends Component {
+  static propTypes = {
+    themeColor: PropTypes.string
+  }
+
+  render () {
+    return (
+      <h1 style={{ color: this.props.themeColor }}>React.js 小书</h1>
+    )
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    themeColor: state.themeColor
+  }
+}
+Header = connect(mapStateToProps)(Header)
+
+export default Header
+```
+
+1. 在src新建两个目录
+
+   ```react
+   src/
+     components/
+     containers/
+   ```
+
+   > *所有的 Dumb 组件都放在 components/ 目录下，所有的 Smart 的组件都放在 containers/ 目录下*，这是一种约定俗成的规则。
+
+2. 新增 src/components/Header.js：
+
+   ```react
+   // 新增 src/components/Header.js：
+   
+   import React, { Component } from 'react'
+   import PropTypes from 'prop-types'
+   
+   export default class Header extends Component {
+     static propTypes = {
+       themeColor: PropTypes.string
+     }
+   
+     render () {
+       return (
+         <h1 style={{ color: this.props.themeColor }}>React.js 小书</h1>
+       )
+     }
+   }
+   ```
+
+3. 我们新建 `src/container/Header.js`，这是一个与之对应的 Smart 组件：
+
+   ```react
+   import { connect } from 'react-redux'
+   import Header from '../components/Header'
+   
+   const mapStateToProps = (state) => {
+     return {
+       themeColor: state.themeColor
+     }
+   }
+   export default connect(mapStateToProps)(Header)
+   ```
+
+   
+

@@ -11,11 +11,56 @@ import * as userConstants from '../constants/user'
  * type 就是 action 的名字
  * @param {*} payload 发出action带上的参数
  */
+
+ const loginApi = () => {
+   return new Promise ((resolve) => {
+     setTimeout(() => {
+       resolve({
+        isLoading: true,
+        nickname: 'zhaosi',
+        avatar: 'http://baidu.com'
+       })
+     }, 3000)
+   })
+ }
+
 export const login =  (payload) => {
-  return {
-    type: userConstants.USER_LOGIN,
-    payload
+
+  // 第四版
+  return async (dispatch) => {
+    dispatch(update({ 
+      loading: true 
+    }))
+
+    const res = await loginApi()
+    console.log('res', res)
+    
+    dispatch(update({
+      ...res,
+      loading: false
+    }))
   }
+
+
+  // 第二版
+  // 因为thunk 拦截了 actions ，会传入一个 dispatch 回来
+  // return (dispatch) => {
+  //   setTimeout(
+  //     dispatch(
+  //       update({
+  //         isLoading: true,
+  //         nickname: 'zhaosi',
+  //         avatar: 'http://baidu.com'
+  //       }))
+  //   , 3000)
+  // }
+
+
+  // 第一版
+  // return {
+  //   type: userConstants.USER_LOGIN,
+  //   payload
+  // }
 }
 
 export const logout =  (payload) => {
@@ -26,6 +71,7 @@ export const logout =  (payload) => {
 }
 
 export const update =  (payload) => {
+  console.log('update')
   return {
     type: userConstants.USER_UPDATE,
     payload

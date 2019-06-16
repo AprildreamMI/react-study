@@ -6,7 +6,7 @@ import './App.css';
 
 class App extends React.Component {
   render () {
-    console.log(this.props)
+    console.log('传入的props', this.props)
 
     const { user } = this.props
 
@@ -20,6 +20,11 @@ class App extends React.Component {
                 '欢迎您'
                 :
                 '未登录'
+            }
+          </div>
+          <div>
+            {
+              user.loading? '加载中...' : ''
             }
           </div>
           <button onClick={ e=> {
