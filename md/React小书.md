@@ -453,6 +453,22 @@ class Index extends Component {
 
 ## 列表渲染数据
 
+```react
+function CommentList ({ comments = [] }) {
+  return (
+    <div>
+      {
+        comments.map((item, index) => {
+          return <Comment comment = { item } key = {index} />
+        } )
+      }
+    </div>
+  )
+}
+
+export default CommentList
+```
+
 ### 渲染存放JSX元素的数组
 
 ## 挂载阶段的组件生命周期（一）

@@ -127,7 +127,6 @@ class App extends React.Component {
               {/* 传递参数 路由参数 传递字符串 */}
               <Route path="/user/:id" component={ User } />
 
-            
               <Route path="/userq" component={ User } />
               <Redirect to="/" />
             </Switch>
