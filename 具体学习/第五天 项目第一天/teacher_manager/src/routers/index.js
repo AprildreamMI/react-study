@@ -2,8 +2,7 @@
 // 配置路由规则
 import React from 'react'
 import { Router, Route, NavLink, Switch, Redirect } from 'dva/router'
-
-const Home = () => <h1>您好</h1>
+import Home from '../components/Home'
 
 // 使用history 需要先进行声明
 let fn = function ({ history, app }) {
