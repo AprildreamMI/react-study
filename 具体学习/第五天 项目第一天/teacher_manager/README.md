@@ -111,7 +111,13 @@
        }
      },
      reducers: {
-       //  需要用 {  } 括起来
+       /*
+         let two = {
+           payload: {num: 8}
+           type: "index/addNum"
+         }
+         let { payload } = two  // { num: 8 }
+       */
        addNum (state, { payload }) {
          // 返回一个新对象 值不可变性
          console.log(state, payload)
@@ -163,5 +169,11 @@
    
    ```
 
-    
+7. 使用 axios
+
+   ```
+   npm i axios -S
+   ```
+
+   
 
