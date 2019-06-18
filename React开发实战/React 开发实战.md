@@ -1,6 +1,90 @@
 # React 开发实战
 
-## 第一章 React 入门
+## 内联样式 自动追加正确的单位
 
-### 定义React
+```react
+import React, { Component } from 'react'
+
+class StyleSpan extends Component {
+  // 可以自动追加正确的单位
+  render () {
+    let divStyle = {
+      width: 100,
+      height: 30,
+      padding: 5,
+      backgroundColor: '#ee9900'
+    }
+
+    return (
+      <div style={ divStyle }>
+        Hello World
+      </div>
+    )
+  }
+}
+
+
+export default StyleSpan
+```
+
+![1560842844085](../React%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/%E7%AC%AC%E4%B8%80%E7%AB%A0/kanban-app/assets/1560842844085.png)
+
+## 受控组件和非受控组件
+
+- 受控组件
+
+  ```react
+  // 受控组件 值由react 控制
+  // 通过handelChangeInput 来更新组件
+  < input type="search" value={ this.state.searchTerm } onChange={ e => {
+      this.handelChangeInput(e)
+    } } />
+  ```
+
+- 非受控组
+
+  > 不为react 控制的组件
+
+  ```react
+  import React, { Component } from 'react'
+  
+  class Uncontrolled extends Component {
+    constructor () {
+      super()
+      this.state = {
+        name: '赵思',
+        email: 'magicwingzs@qq.com'
+      }
+    }
+    handelSubmit (e) {
+      e.preventDefault()
+      console.dir(e.target.name.value)
+      console.dir(e.target.Email.value)
+    }
+    handelChangeInput (e) {
+      console.log(e.target.value)
+    }
+    render () {
+      return (
+        <form onSubmit={ this.handelSubmit.bind(this) }>
+          <div>
+            {/* 通过defaultValue 来设置默认值 */}
+            Name: <input name="name" type="text" defaultValue={ this.state.name } onChange={ e => this.handelChangeInput(e) } />
+          </div>
+          <div>
+            Email: <input name="Email" type="email" defaultValue={ this.state.email } />
+          </div>
+          <button type="submit">
+            Submit
+          </button>
+        </form>
+      )
+    }
+  }
+  
+  
+  export default Uncontrolled
+  ```
+
+  
 

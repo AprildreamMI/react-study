@@ -1,68 +1,173 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# kanban-app
 
-## Available Scripts
+1. `src/components/KanbanBoard.js`
 
-In the project directory, you can run:
+   > 新建
 
-### `npm start`
+   ```react
+   import React, { Component } from 'react'
+   import List from './List'
+   
+   
+   class KanbanBoard extends Component {
+     render () {
+       console.log(this.props.cards)
+       return (
+         <div className="app">
+           <List id="todo" title="To Do" cards={ this.props.cards.filter( (card) => card.status === 'todo' ) } />
+           <List id="in-progress" title="In Pro" cards={ this.props.cards.filter( (card) => card.status === 'in-progress' ) } />
+           <List id="done" title="Done" cards={ this.props.cards.filter( (card) => card.status === 'done' ) } />
+         </div>
+       )
+     }
+   }
+   
+   export default KanbanBoard
+   ```
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+2. `src/components/List.js`
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+   > 列表渲染 使用key
 
-### `npm test`
+   ```react
+   import React, { Component } from 'react'
+   import Card from './Card.js'
+   
+   class List extends Component {
+     render () {
+       let cards = this.props.cards.map( (card) => {
+         return <Card id={ card.id } title={ card.title } description={ card.description } color={ card.color } tasks={ card.tasks } key={ card.id } />
+       } )
+       return (
+         <div className="list">
+           <h1>
+             { this.props.title }
+           </h1>
+           { cards }
+         </div>
+       )
+     }
+   }
+   
+   
+   export default List
+   ```
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. `src/components/Card.js`
 
-### `npm run build`
+   ```react
+   import React, { Component } from 'react'
+   import CheckList from './CheckList'
+   // 使用Markdown
+   import marked from 'marked'
+   
+   class Card extends Component {
+     constructor () {
+       super()
+       this.state = {
+         showDetails: false
+       }
+     }
+     render () {
+       console.log('Card Poprs', this.props)
+       let cardDetails
+       if (this.state.showDetails) {
+         cardDetails = (
+           <div className="card__details">
+             {/* html 渲染 xss */}
+             <span dangerouslySetInnerHTML={ {
+               __html: marked(this.props.description)
+             } } />
+             <CheckList cardId={ this.props.id } tasks={ this.props.tasks } />
+           </div>
+         )
+       }
+   
+       let sideColor = {
+         position: 'absolute',
+         zIndex: -1,
+         top: 0,
+         bottom: 0,
+         left: 0,
+         width: 7,
+         backgroundColor: this.props.color
+       }
+   
+       return (
+         <div className="card">
+           <div style={ sideColor } />
+           <div className={ this.state.showDetails? "card__title card__title--is-open" : "card__title" } onClick={ () => {
+             this.setState({
+               showDetails: !this.state.showDetails
+             })
+           } }>
+             { this.props.title }
+           </div>
+           { cardDetails }
+         </div>
+       )
+     }
+   }
+   
+   export default Card
+   ```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+4. `src/components/CheckList.js`
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+   ```react
+   import React, { Component } from 'react'
+   import CheckList from './CheckList'
+   
+   class Card extends Component {
+   
+     render () {
+       return (
+         <div className="card">
+           <div className="card__title">
+             { this.props.title }
+           </div>
+           <div className="card__details">
+             { this.props.description }
+             <CheckList cardId={ this.props.id } tasks={ this.props.tasks } />
+           </div>
+         </div>
+       )
+     }
+   }
+   
+   export default Card
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+5. `src/components/CheckList.js`
 
-### `npm run eject`
+   > 列表渲染
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+   ```react
+   import React, { Component } from 'react'
+   
+   class CheckList extends Component {
+     render () {
+       let tasks = this.props.tasks.map((task, index) => {
+         return (
+           <li className="checklist__task" key={ index }>
+             <input type="checkbox" defaultChecked={ task.done } />
+             { task.name }
+             <i className="checklist__task--remove" />
+           </li>
+         )
+       })
+       return (
+         <div className="checklist">
+           <ul>
+             { tasks }
+           </ul>
+         </div>
+       )
+     }
+   }
+   
+   
+   export default CheckList
+   ```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+   
