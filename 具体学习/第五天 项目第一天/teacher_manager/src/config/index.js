@@ -1,4 +1,2 @@
-export default {
-  serverHost: 'http://www.sinya.online',
-  port: 3002
-}
+export const serverHost = 'http://www.sinya.online'
+export const port = 3002
