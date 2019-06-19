@@ -1,9 +1,32 @@
 import React, { Component } from 'react'
-import CheckList from './CheckList'
+import PropTypes from 'prop-types'
 // 使用Markdown
 import marked from 'marked'
 
+import CheckList from './CheckList'
+
+// 自定义的校验器
+let titlePropType = (props, propName, componentName) => {
+  if (props[propName]) {
+    let value = props[propName]
+    if (typeof value !== 'string' || value.length > 80) {
+      return new Error(
+        `${propName} in ${componentName} is longer then 80 characters`
+      )
+    }
+  }
+}
+
+
 class Card extends Component {
+  static propTypes = {
+    id: PropTypes.number,
+    // 自定义的校验
+    title: titlePropType,
+    description: PropTypes.string,
+    color: PropTypes.string,
+    tasks: PropTypes.arrayOf(PropTypes.object)
+  }
   constructor () {
     super()
     this.state = {
@@ -11,7 +34,6 @@ class Card extends Component {
     }
   }
   render () {
-    console.log('Card Poprs', this.props)
     let cardDetails
     if (this.state.showDetails) {
       cardDetails = (

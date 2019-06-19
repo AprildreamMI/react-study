@@ -88,3 +88,49 @@ export default StyleSpan
 
   
 
+## 自定义propTypes 校验器
+
+```react
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
+// 自定义的校验器
+let titlePropType = (props, propName, componentName) => {
+  if (props[propName]) {
+    let value = props[propName]
+    if (typeof value !== 'string' || value.length > 80) {
+      return new Error(
+        `${propName} in ${componentName} is longer then 80 characters`
+      )
+    }
+  }
+}
+
+
+class Card extends Component {
+  static propTypes = {
+    id: PropTypes.number,
+    // 使用自定义的校验
+    title: titlePropType,
+    description: PropTypes.string,
+    color: PropTypes.string,
+    tasks: PropTypes.arrayOf(PropTypes.object)
+  }
+  constructor () {
+    super()
+    this.state = {
+    }
+  }
+  render () {
+    return (
+      <div className="card">
+      </div>
+    )
+  }
+}
+
+export default Card
+```
+
+>  验证失败时![1560928986517](assets/1560928986517.png) 
+

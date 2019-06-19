@@ -4,7 +4,8 @@ import PropTypes from 'prop-types'
 class CheckList extends Component {
   // 小写
   static propTypes = {
-    
+    cardId: PropTypes.number,
+    tasks: PropTypes.arrayOf(PropTypes.object)
   }
   render () {
     let tasks = this.props.tasks.map((task, index) => {
