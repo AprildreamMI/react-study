@@ -16,8 +16,9 @@ class Signin extends Component {
   handelSignin (e) {
     e.preventDefault()
     let { username, password } = this.state
+    console.log(username)
     this.props.dispatch({
-      type: 'tearch/doLogin',
+      type: 'teacher/doLogin',
       payload: {
         username,
         password

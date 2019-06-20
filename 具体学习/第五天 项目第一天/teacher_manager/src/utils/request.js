@@ -2,7 +2,8 @@ import Axios from 'axios'
 import { serverHost, port } from '../config/index'
 
 let r = Axios.create({
-  baseURL: `${serverHost}:${port}/`
+  baseURL: `${serverHost}:${port}/api/`,
+  headers: {'Content-Type':'application/json;charset=utf-8'}
 })
 // yield 必须接受一个函数 返回一个Promise
 let request = function (url='', options={}) {

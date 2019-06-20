@@ -15,15 +15,16 @@ let teacher = {
     put: 调用reducers 
     call： 调用异步方法 */
     *doLogin ({ payload }, { select, put, call }) {
+      console.log(payload)
       // call 接受一个函数里面返回一个Promise
       let res = yield call(request('signin', {
         method: 'post',
         data: payload, // { username, password }
       }))
-      console.log(res)
-      if (res.data.code !== 0) return alert(res.data.message)
+      console.log('返回的数据', res)
+      // if (res.data.code !== 0) return alert(res.data.message)
       yield put({type: 'changeLogin', payload: {isLogin: true}})
-      yield put(routerRedux.push('/home'))
+      // yield put(routerRedux.push('/home'))
     }
   },
   reducers: {
