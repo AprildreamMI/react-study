@@ -25,7 +25,9 @@ class Card extends Component {
     title: titlePropType,
     description: PropTypes.string,
     color: PropTypes.string,
-    tasks: PropTypes.arrayOf(PropTypes.object)
+    tasks: PropTypes.arrayOf(PropTypes.object),
+    taskCallbacks: PropTypes.objectOf(PropTypes.func).isRequired
+
   }
   constructor () {
     super()
@@ -42,11 +44,14 @@ class Card extends Component {
           <span dangerouslySetInnerHTML={ {
             __html: marked(this.props.description)
           } } />
-          <CheckList cardId={ this.props.id } tasks={ this.props.tasks } />
+          <CheckList cardId={ this.props.id } tasks={ this.props.tasks } 
+            taskCallbacks={ this.props.taskCallbacks }
+          />
         </div>
       )
     }
 
+    // 内联样式
     let sideColor = {
       position: 'absolute',
       zIndex: -1,

@@ -183,6 +183,7 @@ ul {
   display: inline-block;
   color: #d66;
   content: "✖";
+  cursor: pointer;
 }
 
 .checklist--add-task {
