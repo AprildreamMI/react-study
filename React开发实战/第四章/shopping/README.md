@@ -144,7 +144,6 @@ input {
   transform: translateX(250px);
   transition: 0.3s;
 }
-
 .example-appear {
   opacity: 0;
   transform: translateX(-250px);
@@ -156,3 +155,50 @@ input {
 }
 ```
 
+# 拖放
+
+## 安装 React Dnd 2
+
+```javascript
+npm i react-dnd react-dnd-html5-backend -S
+```
+
+> React DnD 库 提供了三个高阶组件，他们必须应用于你的应用程序的不同组件中，这三个高阶组件分别是DragSource, DropTarget, DragDropContext
+
++ DragSource
+
+  > 会返回指定组件的增强版，是组建成为一个可被拖拽的元素
+
++ DropTarget
+
+  > 同样会返回增强版的组件，使其有能力处理被拖放其内部的元素
+
++ DragDropContext
+
+  > 封装了发生拖放交互行为的父元素，在交互场景背后
+
+  
+
+### DragSource 和 DropTarget 高阶组件
+
++ type
+
+  > 指定了组件的名称，在复杂的UI中，可能会出现多个不同类型的拖拽源和多个不同类型的放置目标之间的交互，所以需要给每个源或目标设置一个特定的标识
+
++ spec 对象
+
+  > 描述了增强组件是如何响应拖拽和放置事件的，他是一个包含了若干函数的普通JavaScript对象，这些甘薯会在拖拽交互发生时被调用
+  >
+  > 对于DragSource 有
+  >
+  > 1. beginDrag
+  > 2. endDrag
+  >
+  > 对于DropTarget 
+  >
+  > 1. canDrag
+  > 2. onDrag
+
++ collect函数
+
+  > 
