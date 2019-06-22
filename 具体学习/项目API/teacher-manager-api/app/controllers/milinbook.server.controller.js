@@ -12,7 +12,8 @@ var moment = require('moment')
  * @param {*} statusCode  状态码
  * @param {*} param2  result, code. message
  */
-const resJson = (res, { result, code = 0, message = 'data ok' }, statusCode = 200 ) => {
+const resJson = (res, { result = {}, code = 0, message = 'data ok' }, statusCode = 200 ) => {
+  console.log('状态码', statusCode)
     res.status(statusCode).json({
         data: result,
         code: code,
@@ -21,10 +22,10 @@ const resJson = (res, { result, code = 0, message = 'data ok' }, statusCode = 20
 }
 
 const res500 = (res, message = '数据库错误') => {
-    resJson(res, 500, {
+    resJson(res, {
         code: 10001,
         message: message
-    })
+    }, 500)
 }
 
 module.exports = {
@@ -58,7 +59,7 @@ module.exports = {
         })
       },
       (userItem, callback) => {
-        if (userItem.CustomerPwd === req.body.password) {
+        if (userItem.password === req.body.password) {
           callback(null, userItem)
         } else {
           callback(new Error('密码错误, 请重新输入'))
@@ -71,13 +72,13 @@ module.exports = {
         })
       },
     ], (err, result) => {
-      if (err) return res.res500(res, err.message)
-        return resJson(res, {
-            result: {
-                user: result
-            },
-            message: '登录成功'
-        })
+      if (err) return resJson(res, { code: -1, message: err.message})
+      return resJson(res, {
+          result: {
+              user: result
+          },
+          message: '登录成功'
+      })
     })
   }
 };

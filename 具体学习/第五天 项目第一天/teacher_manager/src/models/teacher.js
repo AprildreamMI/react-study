@@ -2,6 +2,8 @@ import request from '../utils/request'
 // 做路由的跳转使用
 import { routerRedux } from 'dva/router'
 
+import * as api from '../api/index'
+
 let teacher = {
   // 命名空间 具体命名
   namespace: 'teacher',
@@ -9,22 +11,25 @@ let teacher = {
     isLogin: false
   },
   effects: {
-    // 异步action
+    // 异步action 同步返回 结果
     /* payload: 发来的action 中携带的数据
     select： 获取当前的state
     put: 调用reducers 
     call： 调用异步方法 */
     *doLogin ({ payload }, { select, put, call }) {
-      console.log(payload)
-      // call 接受一个函数里面返回一个Promise
-      let res = yield call(request('signin', {
-        method: 'post',
-        data: payload, // { username, password }
-      }))
-      console.log('返回的数据', res)
-      // if (res.data.code !== 0) return alert(res.data.message)
-      yield put({type: 'changeLogin', payload: {isLogin: true}})
-      // yield put(routerRedux.push('/home'))
+      // call 接受一个函数里面返回一个Promise 同步返回
+      let res
+      try {
+        res = yield call(() => api.login(payload))
+      } catch (error) {
+        console.log('登录失败', error)
+      }
+      if (res.data.code === 0) {
+        console.log(res.data)
+        window.sessionStorage.setItem('user', JSON.stringify(res.data.data.user))
+        yield put({type: 'changeLogin', payload: {isLogin: true}})
+        yield put(routerRedux.push('/home'))
+      }
     }
   },
   reducers: {

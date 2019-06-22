@@ -3,6 +3,8 @@
 // 使用history_1: 引入createHistory
 // import createHistory from 'history/createBrowserHistory'
 import { createBrowserHistory  } from 'history'
+import createLoading from 'dva-loading';
+
 
 // 引入样式 使用 bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -33,6 +35,10 @@ const app = new Dva({
 app.router(router)
 
 // 4、app.use();  // 安装插件
+app.use(createLoading({
+  // 创建了一个命名空间
+  namespace:'myloading', //默认是loading没有啥用
+}));
 
 // 5、注册模块 app.model
 app.model(model)

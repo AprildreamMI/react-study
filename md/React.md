@@ -481,6 +481,8 @@ export default App;
 
 ##### 基本使用
 
+> ![1561216340894](assets/1561216340894.png)
+
 ```react
 import React from 'react';
 import './App.css';
@@ -610,6 +612,7 @@ class App extends React.Component {
               <Route path="/user/:id" component={ User } />
             
               <Route path="/userq" component={ User } />
+              {/* 重定向 */}
               <Redirect to="/" />
             </Switch>
           </React.Fragment>
