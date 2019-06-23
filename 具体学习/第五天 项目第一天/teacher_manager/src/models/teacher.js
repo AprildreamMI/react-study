@@ -8,7 +8,11 @@ let teacher = {
   // 命名空间 具体命名
   namespace: 'teacher',
   state: {
-    isLogin: false
+    isLogin: false,
+    // 讲师列表
+    teachers:[],
+    //总记录数
+    total: 0,
   },
   effects: {
     // 异步action 同步返回 结果
@@ -30,7 +34,29 @@ let teacher = {
         yield put({type: 'changeLogin', payload: {isLogin: true}})
         yield put(routerRedux.push('/home'))
       }
-    }
+    },
+    // 更新teachers
+    *updateTeacher({payload},{select,put,call}) {
+      let res
+      try {
+        /* // 传入 {
+          page,
+          count
+        } */
+        res = yield call(() => api.getTeachers(payload))
+      } catch (error) {
+        console.log('获取教师列表错误')
+      }
+      if (res.data.code === 0) {
+        console.log('教师列表', res.data)
+        // 将teacher信息保存到state中
+        yield put({ type:'update', payload:{ 
+            teachers:res.data.data.teachers,
+            total:res.data.data.total 
+          }
+        })
+      }
+    },
   },
   reducers: {
     /*
@@ -44,6 +70,12 @@ let teacher = {
     changeLogin (state, { payload }) {
       return {
         isLogin: payload.isLogin
+      }
+    },
+    update (state, { payload }) {
+      return {
+        teachers: payload.teachers,
+        total: payload.total
       }
     }
   }

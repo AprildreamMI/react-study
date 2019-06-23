@@ -351,10 +351,11 @@
               console.log(res.data)
               window.sessionStorage.setItem('user', JSON.stringify(res.data.data.user))
               yield put({type: 'changeLogin', payload: {isLogin: true}})
+               // 
               yield put(routerRedux.push('/home'))
             }
           }
-     },
+        },
         reducers: {
        /*
             整个对象是 action  只要action中的payload
@@ -376,6 +377,8 @@
       export default teacher
       ```
    
+      在effects中进行路由的跳转![1561301908406](assets/1561301908406.png)
+   
    2. 在 `src/index.js`中注册
    
       ```javascript
@@ -386,7 +389,6 @@
       app.model(teacher)
       ```
    
-      
    
    ### 首页
    
@@ -440,7 +442,6 @@
        })
    }
    ```
-   
    
 
 ### 使用Loading

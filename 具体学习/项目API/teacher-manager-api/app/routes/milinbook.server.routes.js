@@ -11,4 +11,8 @@ module.exports = function(app){
    */
   app.route('/api/signin')
     .post(MilinBookController.signin)
+
+  // 获取教师列表 传入页码和每页条数
+  app.route('/api/teachers')
+    .get(MilinBookController.getTeachers)
 };

@@ -14,6 +14,14 @@ export const getAll = () => get(`/test`)
   export const deleteModule = (id, data) => remove(`/api/v1/portal/modules/${id}`, data)
 */
 
-
-// 登录
+/**
+ * 登录
+ * @param {*} data 
+ */
 export const login = (data) => post('/signin', data)
+
+/**
+ * 获取讲师数据
+ * @param {*} data 
+ */
+export const getTeachers = (data) => get('/teachers', data)
