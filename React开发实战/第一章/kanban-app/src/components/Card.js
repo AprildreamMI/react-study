@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+// 使用动画
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+
 // 使用Markdown
 import marked from 'marked'
 
@@ -27,7 +30,6 @@ class Card extends Component {
     color: PropTypes.string,
     tasks: PropTypes.arrayOf(PropTypes.object),
     taskCallbacks: PropTypes.objectOf(PropTypes.func).isRequired
-
   }
   constructor () {
     super()
@@ -37,6 +39,7 @@ class Card extends Component {
   }
   render () {
     let cardDetails
+    // state 的值 更新 会重新调用render函数
     if (this.state.showDetails) {
       cardDetails = (
         <div className="card__details">
@@ -72,7 +75,13 @@ class Card extends Component {
         } }>
           { this.props.title }
         </div>
-        { cardDetails }
+        <ReactCSSTransitionGroup
+          transitionName="toggle"
+          transitionEnterTimeout={ 250 }
+          transitionLeaveTimeout={ 300 }
+        >
+          { cardDetails }
+        </ReactCSSTransitionGroup>
       </div>
     )
   }

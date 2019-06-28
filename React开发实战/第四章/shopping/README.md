@@ -201,4 +201,181 @@ npm i react-dnd react-dnd-html5-backend -S
 
 + collect函数
 
-  > 
+  > DragSource 和 DropTarget 的封装都向其内部组件中提供了属性注入
+  >
+  > React DnD 并非直接在组件中注入所有的prop属性，而是通过collect 函数来控制哪些属性需要进行注入以及如何进行注入，可以在注入前对属性进行预处理，改变其名称
+
+## 开始
+
+`shopDnD/Container.js`
+
+```javascript
+import React, { Component } from 'react'
+// 引入 包裹 目标容器 及 源组件的 最外层高阶组件
+import { DragDropContext } from 'react-dnd'
+// 当做参数传入
+import HTML5Backend from 'react-dnd-html5-backend'
+// 目标容器
+import ShoppingCart from './ShoppingCart'
+// 拖拽源组件
+import Snack from './Snack'
+
+class Container extends Component {
+  render () {
+    return (
+      <div>
+        <Snack name="Chips" />
+        <Snack name="Cupcake" />
+        <Snack name="Donut" />
+        <Snack name="Doritos" />
+        <Snack name="Popcorn" />
+        <ShoppingCart />
+      </div>
+    )
+  }
+}
+
+export default DragDropContext(HTML5Backend)(Container)
+
+```
+
+`shopDnD/ShoppingCart.js`
+
+```javascript
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+// 引入目标容器的高阶组件
+import { DropTarget } from 'react-dnd'
+
+// spec 对象 【需要传入的】
+const ShoppingCartSpec = {
+  drop () {
+    return {
+      name: 'ShoppingCart'
+    }
+  }
+}
+
+let collect = (connect, monitor) => {
+  return {
+    // 包裹目标容器的方法
+    connectDropTarget: connect.dropTarget(),
+    // 可以使用任意的名字
+    isOver: monitor.isOver(),
+    canDrop: monitor.canDrop()
+  }
+}
+
+// 目标容器组件
+class ShoppingCart extends Component {
+
+  static propTypes = {
+    connectDropTarget: PropTypes.func.isRequired,
+    isOver: PropTypes.bool.isRequired,
+    canDrop: PropTypes.bool.isRequired
+  }
+
+  render () {
+    // 会通过参数传入进来
+    const { canDrop, isOver, connectDropTarget } = this.props
+    // 如果已经拖拽完成已经放下
+    const isActive = canDrop && isOver
+
+    let backgroundColor = '#FFFFFF'
+    if (isActive) {
+      backgroundColor = '#F7F7BD'
+    } else {
+      backgroundColor = '#F7F7F7'
+    }
+    const style = {
+      backgroundColor: backgroundColor
+    }
+    return (
+      // 拖放目标容器 使用connectDropTarget进行包裹
+      connectDropTarget(
+        <div className="shopping-cart" style={ style }>
+          {
+            isActive?
+            'Hummmm, snack!': 'Drag here to order!'
+          }
+        </div>
+      )
+    )
+  }
+}
+
+//  传入参数 type spec 对象 collect函数
+export default DropTarget("snack", ShoppingCartSpec, collect)(ShoppingCart)
+
+```
+
+`shopDnD/Shack.js`
+
+```javascript
+import React, {Component } from 'react'
+import PropTypes from 'prop-types'
+// 拖拽源高阶组件
+import { DragSource }  from 'react-dnd'
+
+const snackSpec = {
+  // 拖拽这个组件开始
+  beginDrag(props) {
+    return {
+      name: props.name
+    }
+  },
+  // 拖拽这个组件结束
+  endDrag(props, monitor) {
+    // 拖拽的这一项
+    const dragItem = monitor.getItem()
+    // 拖拽的目标容器
+    const dropResult = monitor.getDropResult()
+
+    // 如果目标容易存在
+    if (dropResult) {
+      console.log(`You dropped ${dragItem.name} into ${dropResult.name}`)
+    }
+  }
+}
+
+let collect = (connect, monitor) => {
+  return {
+    // 拖拽的这一项 拖拽源头
+    connectDragSource: connect.dragSource(),
+    // 是否拖动了出来
+    isDragging: monitor.isDragging()
+  }
+}
+
+class Snack extends Component {
+  static propTypes = {
+    name: PropTypes.string.isRequired,
+    isDragging: PropTypes.bool.isRequired,
+    connectDragSource: PropTypes.func.isRequired
+  }
+  render () {
+    const { name, isDragging, connectDragSource } = this.props
+
+    // 如果拖动了出来 则改变其透明度
+    let opacity = isDragging? 0.4 : 1
+
+    const style = {
+      opacity: opacity
+    }
+
+    return (
+      // 当成参数传入函数
+      connectDragSource(
+        <div className="snack" style={ style }>
+          {
+            name
+          }
+        </div>
+      )
+    )
+  }
+}
+
+export default DragSource('snack', snackSpec, collect)(Snack)
+```
+
