@@ -650,6 +650,10 @@ export default App;
 
 ![1559744055472](assets/1559744055472.png)
 
+![1561813167242](assets/1561813167242.png)
+
+> 
+
 ## 安装
 
 ```react
@@ -849,6 +853,7 @@ npm i redux react-redux -S
    import React from 'react';
    import { connect } from 'react-redux'
    import logo from './logo.svg';
+   // 使用action
    import * as userAction from './actions/user'
    import './App.css';
    
