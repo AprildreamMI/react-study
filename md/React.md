@@ -657,7 +657,7 @@ export default App;
 ## 安装
 
 ```react
-npm i redux react-redux -S
+npm i redux react-redux redux-thunk -S
 ```
 
 ## 使用
@@ -829,6 +829,7 @@ npm i redux react-redux -S
    import { Provider } from 'react-redux'
    
    // 初始化一个store
+   // 名字 必须和reducers 中的对应
    const store = Store({
      user: {
        isLoading: false
@@ -915,6 +916,16 @@ npm i redux react-redux -S
    ```
 
 ### 使用redux-thunk
+
+```shell
+npm i redux-thunk -S
+```
+
+```shell
+npm i redux-devtools-extension -D
+```
+
+![1562251404113](assets/1562251404113.png)
 
 ```react
 /* 
