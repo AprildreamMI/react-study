@@ -379,3 +379,48 @@ let newTicket = update(originTicket, {
   }
 ```
 
+> 操作数组
+
+```javascript
+updateCardPosition (cardId, afterId) {
+    if (cardId !== afterId) {
+      // 获取当前卡片Index
+      let cardIndex = this.state.cards.findIndex((card) => card.id === cardId)
+      // 获取当前卡片对象
+      let card = this.state.cards[cardIndex]
+
+      // 获取下一个列表索引
+      let afterIndex = this.state.cards.findIndex((cardId) => card.id == afterId)
+
+      this.setState(update(this.state, {
+        cards: {
+          $splice: [
+            [cardIndex, 1],
+            [afterIndex, 0 ,card]
+          ]
+        }
+      }))
+    }
+```
+
+> 修改对象值
+
+```javascript
+updateCardStatus (cardId, listId) {
+    // 获取卡片在当前列表的索引
+    let cardIndex = this.state.cards.findIndex((card) => card.id === cardId)
+    // 获取当前的卡片
+    let card = this.state.cards[cardIndex]
+    // 如果当前卡片不等于传入的卡片列表的话
+    if (card.status !== listId) {
+      // 使用不可变性助手、
+      this.setState(update(this.state, {
+        cards: {
+          [cardIndex]: {
+            status: {$set: listId}
+          }
+        }
+      }))
+    }
+  }
+```

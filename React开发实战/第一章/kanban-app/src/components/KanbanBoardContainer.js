@@ -120,14 +120,71 @@ class KanbanBoardContainer extends Component {
     })
   }
 
+  /**
+   * 更新卡片的状态 重新分配列表
+   * @param {*} cardId 
+   * @param {*} listId 
+   */
+  updateCardStatus (cardId, listId) {
+    // 获取卡片在当前列表的索引
+    let cardIndex = this.state.cards.findIndex((card) => card.id === cardId)
+    // 获取当前的卡片
+    let card = this.state.cards[cardIndex]
+    // 如果当前卡片不等于传入的卡片列表的话
+    if (card.status !== listId) {
+      // 使用不可变性助手、
+      this.setState(update(this.state, {
+        cards: {
+          [cardIndex]: {
+            status: {$set: listId}
+          }
+        }
+      }))
+    }
+
+  }
+
+  /**
+   * 排序卡片 更新顺序
+   * @param {*} cardId 
+   * @param {*} afterId 
+   */
+  updateCardPosition (cardId, afterId) {
+    if (cardId !== afterId) {
+      // 获取当前卡片Index
+      let cardIndex = this.state.cards.findIndex((card) => card.id === cardId)
+      // 获取当前卡片对象
+      let card = this.state.cards[cardIndex]
+
+      // 获取下一个列表索引
+      let afterIndex = this.state.cards.findIndex((cardId) => card.id === afterId)
+
+      this.setState(update(this.state, {
+        cards: {
+          $splice: [
+            [cardIndex, 1],
+            [afterIndex, 0 ,card]
+          ]
+        }
+      }))
+    }
+  }
+
 
   render () {
     return (
-      <KanbanBoard cards={ this.state.cards } taskCallbacks={{
-        add: this.addTask.bind(this),
-        delete: this.deleteTask.bind(this),
-        toggle: this.toggleTask.bind(this)
-      }} />
+      <KanbanBoard 
+        cards={ this.state.cards }
+        taskCallbacks={{
+          add: this.addTask.bind(this),
+          delete: this.deleteTask.bind(this),
+          toggle: this.toggleTask.bind(this)
+        }}
+        cardCallbacks={{
+          updateStatus: this.updateCardStatus.bind(this),
+          updatePosition: this.updateCardPosition.bind(this)
+        }}
+      />
     )
   }
 }

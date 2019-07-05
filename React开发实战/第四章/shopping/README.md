@@ -187,7 +187,7 @@ npm i react-dnd react-dnd-html5-backend -S
 
 + spec 对象
 
-  > 描述了增强组件是如何响应拖拽和放置事件的，他是一个包含了若干函数的普通JavaScript对象，这些甘薯会在拖拽交互发生时被调用
+  > 描述了增强组件是如何响应拖拽和放置事件的，他是一个包含了若干函数的普通JavaScript对象，这些函数会在拖拽交互发生时被调用
   >
   > 对于DragSource 有
   >
