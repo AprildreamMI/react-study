@@ -12,7 +12,7 @@ module.exports = override(
   addLessLoader({
     javascriptEnabled: true,
     modifyVars: { 
-      "brand-primary": "#101010" 
+      "brand-primary": "#39aacc" 
     }
   })
 );
