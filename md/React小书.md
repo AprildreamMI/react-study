@@ -309,7 +309,7 @@ class LikeButton extends Component {
 
 #### 安装
 
-```
+```shell
 npm install --save prop-types
 ```
 

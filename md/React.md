@@ -630,6 +630,10 @@ export default App;
 
 + exact
 
+  + **exact属性为true时路径中的hash值必须和path完全一致才渲染对应的组件**
+
+  + **false则'/'也可以匹配'/xxx';**
+
   > 精确匹配（必须精确匹配到path的字符串）
   >
   > 纵向深入匹配
@@ -638,8 +642,8 @@ export default App;
 
 + switch
 
-  > 横向匹配 选择一个
-  >
+  + 只渲染第一个匹配到的<路由组件>或<重定向组件>。
+  
   > 被包裹的<Route />
   >
   > 从上到下进行匹配
@@ -1283,3 +1287,5 @@ File sizes after gzip:
 ```
 
 `build` 命令会打包所有的资源，包含 JavaScript, CSS, web fonts, images, html 等。然后你可以在 `dist/` 目录下找到这些文件。
+
+# 

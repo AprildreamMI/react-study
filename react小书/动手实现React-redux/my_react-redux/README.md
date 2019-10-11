@@ -1,68 +1,133 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 高阶函数
 
-## Available Scripts
+## 普通的高阶函数
 
-In the project directory, you can run:
+```javascript
+import React from 'react'
 
-### `npm start`
+export default (WrappeCompoent, name) => {
+  class NewComponent extends React.Component {
+    constructor () {
+      super()
+      this.state = {
+        data: null
+      }
+    }
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+    componentWillMount () {
+      let data = localStorage.getItem(name)
+      this.setState({data})
+    }
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+    render () {
+      return <WrappeCompoent data={ this.state.data } />
+    }
+  }
 
-### `npm test`
+  return NewComponent
+}
+```
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 复杂的高阶组件
 
-### `npm run build`
+```javascript
+import React from 'react';
+import PropTypes from 'prop-types'
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+// connect 现在是接受一个参数 mapStateToPRops 然后返回一个函数，这个函数接受一个参数为组件
+// 这个返回的函数才是高阶组件 
+// eslint-disable-next-line no-undef
+export const connect = (mapStateToProps, mapDispatchToProps) => (WrappedComponent) => {
+  class Connect extends React.Component {
+    static contextTypes = {
+      store: PropTypes.object
+    }
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+    constructor () {
+      super()
+      this.state = {
+        allProps: {}
+      }
+    }
+  
+    componentWillMount () {
+      const { store } = this.context
+      this._updateProps()
+      store.subscribe( () => this._updateProps() )
+    }
+  
+    _updateProps () {
+      const { store } = this.context
+      // 额外传入this.props
+      let stateProps = mapStateToProps
+        ? mapStateToProps(store.getState(), this.props)
+        : {} // 防止 mapStateToProps 没有传入
+      let dispatchProps = mapDispatchToProps
+        ? mapDispatchToProps(store.dispatch, this.props)
+        : {} // 防止 mapDispatchToProps 没有传入
+      this.setState({
+        // 整合普通的props 和从 state 生成的props
+        allProps: {
+          ...stateProps,
+          ...this.props,
+          ...dispatchProps
+        }
+      })
+    }
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    // 接收一个组件作为参数 把此组件当成子组件进行渲染
+    render () {
+      // { ...stateProps 意思就是把这个对象里面的属性全部通过props方式传递进去 }
+      return <WrappedComponent {...this.state.allProps} />
+    }
+  }
 
-### `npm run eject`
+  // 返回一个组件
+  return Connect
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 使用
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```javascript
+import React from 'react'
+import PropTypes from 'prop-types'
+import ThemeSwitch from './ThemeSwitch'
+import { connect } from './Connect'
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+class Content extends React.Component {
+  static propTypes = {
+    themeColor: PropTypes.string
+  }
 
-## Learn More
+  render () {
+    return (
+      <div>
+        <p style={{ color: this.props.themeColor }}>
+          React.js 小书内容
+        </p>
+        <ThemeSwitch />
+      </div>
+    )
+  }
+}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+const mapStateToProps = (state) => {
+  return {
+    themeColor: state.themeColor
+  }
+}
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSwitchColor: (color) => {
+      dispatch({ type: 'CHANGE_COLOR', themeColor: color })
+    }
+  }
+}
 
-### Code Splitting
+export default Content = connect(mapStateToProps, mapDispatchToProps)(Content)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+```
 
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
