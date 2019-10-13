@@ -274,6 +274,8 @@ npm i react-addons-update -S
 import update from 'react-addons-update'
 ```
 
+![1561002737524](assets/1561002737524.png)
+
 > update 接受两个参数 第一个参数是你想要更新的对象或者数组，第二个参数是一个对象，他描述了你想要在何处进行何种修改
 
 ```javascript
@@ -281,7 +283,26 @@ let student = { name: 'John Caster', grades: { 'A', 'C', 'B' } }
 
 // 数组新增一个元素
 // 定位到grader属性 进行push 修改
+注意： 一个对象中的数组需要向下方这样写
 let newSyudent = update(student, { grades: { $push: ['A'] } })
+
+正确的写法
+this.setState(update(this.state, {
+    goods: {
+        $push: [{
+            id: this.state.goods.length + 1,
+            name: this.state.text
+        }]
+    }
+}))
+
+错误的写法
+this.setState(update(this.state.goods, {
+    $push: [{
+        id: this.state.goods.length + 1,
+        name: this.state.text
+    }]
+}))
 
 // 如果想要完全修改整个数组 可以用$set 命令
 let newStudent = update(student, { grades: { $set: ['a', 'a', 'b'] } })
@@ -319,8 +340,6 @@ let newTicket = update(originTicket, {
   }
 })
 ```
-
-![1561002737524](assets/1561002737524.png)
 
 ##### 例子
 
@@ -424,3 +443,36 @@ updateCardStatus (cardId, listId) {
     }
   }
 ```
+
+```javascript
+//  购物车列表
+cartList: []
+
+// 加入到购物车
+  addCard (good) {
+    let goodIndex = this.state.cartList.findIndex(item => {
+      return item.id === good.id
+    });
+    if (goodIndex !== -1) {
+      this.setState(update(this.state, {
+        cartList: {
+          [goodIndex]: {
+            count: {
+              $apply: (value) => value + 1
+            }
+          }
+        }
+      }))
+    } else {
+      this.setState(update(this.state, {
+        cartList: {
+          $push: [{
+            ...good,
+            count: 1
+          }]
+        }
+      }))
+    }
+  };
+```
+
